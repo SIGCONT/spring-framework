@@ -38,20 +38,26 @@ import org.springframework.util.StringValueResolver;
  * @author Juergen Hoeller
  * @since 2.5.2
  */
+//主要使用map作为alias的缓存，并对接口AliasRegistry进行实现
+//name可以对应多个alias，最终形成类似并查集的结构，注意约束条件的判断
 public class SimpleAliasRegistry implements AliasRegistry {
 
 	/** Logger available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/** Map from alias to canonical name */
+	//使用map作为alias的缓存，从alias指向name
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 
 	@Override
 	public void registerAlias(String name, String alias) {
+
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
+
+		//所有操作在临界区中
 		synchronized (this.aliasMap) {
+			//如果alias和name相等，则从map中删除此alias
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);
 				if (logger.isDebugEnabled()) {
@@ -60,7 +66,9 @@ public class SimpleAliasRegistry implements AliasRegistry {
 			}
 			else {
 				String registeredName = this.aliasMap.get(alias);
+				//如果已经存在此alias
 				if (registeredName != null) {
+					//重复注册，则放弃
 					if (registeredName.equals(name)) {
 						// An existing alias - no need to re-register
 						return;

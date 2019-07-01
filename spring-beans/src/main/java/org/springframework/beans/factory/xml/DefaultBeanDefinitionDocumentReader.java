@@ -92,9 +92,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
+
+		//先保存传过来的上下文
 		this.readerContext = readerContext;
 		logger.debug("Loading bean definitions");
+
+		//开始解析XML元素并进行bean的注册
 		Element root = doc.getDocumentElement();
+		//向下中转调用
 		doRegisterBeanDefinitions(root);
 	}
 
@@ -165,6 +170,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * @param root the DOM root element of the document
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+		//如果是默认命名空间下的元素，则由当前类解析
+		//否则由delegate解析
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {

@@ -55,6 +55,7 @@ import org.springframework.lang.Nullable;
  * @see HierarchicalBeanFactory
  * @see BeanFactoryUtils
  */
+//BeanFactory提供了获取单个bean的方法，ListableBeanFactory提供了获取指定条件的bean列表的方法
 public interface ListableBeanFactory extends BeanFactory {
 
 	/**

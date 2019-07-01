@@ -113,6 +113,7 @@ import org.springframework.lang.Nullable;
  * @see DisposableBean#destroy
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
  */
+//IOC容器的顶层接口，提供了获取和查询bean的方法
 public interface BeanFactory {
 
 	/**

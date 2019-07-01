@@ -68,6 +68,7 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.beans.factory.DisposableBean
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory
  */
+//对接口SingletonBeanRegistry各方法的实现
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
 	/** Cache of singleton objects: bean name --> bean instance */
@@ -112,8 +113,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	@Override
 	public void registerSingleton(String beanName, Object singletonObject) throws IllegalStateException {
+
 		Assert.notNull(beanName, "Bean name must not be null");
 		Assert.notNull(singletonObject, "Singleton object must not be null");
+
+		//把单例bean注册到缓存map中
 		synchronized (this.singletonObjects) {
 			Object oldObject = this.singletonObjects.get(beanName);
 			if (oldObject != null) {
@@ -282,11 +286,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	@Override
 	public boolean containsSingleton(String beanName) {
+		//直接判断缓存map中是否有此beanName
 		return this.singletonObjects.containsKey(beanName);
 	}
 
 	@Override
 	public String[] getSingletonNames() {
+		//registeredSingletons中存储了所有的beanName列表
 		synchronized (this.singletonObjects) {
 			return StringUtils.toStringArray(this.registeredSingletons);
 		}
@@ -294,6 +300,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	@Override
 	public int getSingletonCount() {
+		//直接返回缓存map的size
 		synchronized (this.singletonObjects) {
 			return this.registeredSingletons.size();
 		}

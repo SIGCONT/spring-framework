@@ -45,6 +45,7 @@ import org.springframework.core.AliasRegistry;
  * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
  * @see PropertiesBeanDefinitionReader
  */
+//定义对BeanDefinition的各项增删改查操作，主要用于Spring内部解析配置文件时使用
 public interface BeanDefinitionRegistry extends AliasRegistry {
 
 	/**

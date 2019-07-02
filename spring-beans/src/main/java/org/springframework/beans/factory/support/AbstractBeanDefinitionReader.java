@@ -45,6 +45,7 @@ import org.springframework.util.Assert;
  * @since 11.12.2003
  * @see BeanDefinitionReaderUtils
  */
+//对BeanDefinitionReader借口进行实现，loadBeanDefinitions(Resource resource)模板方法留给子类实现
 public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable, BeanDefinitionReader {
 
 	/** Logger available to subclasses */

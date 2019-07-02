@@ -135,6 +135,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
+			//获取beans节点是否定义了profile属性，如果定义了则需要到环境变量中去寻找
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -149,8 +150,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
+		//解析前处理，留给子类实现
 		preProcessXml(root);
+		//向下中转调用
 		parseBeanDefinitions(root, this.delegate);
+		//解析后处理，留给子类实现
 		postProcessXml(root);
 
 		this.delegate = parent;
@@ -188,6 +192,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 		else {
+			//对自定义命名空间下的元素进行解析
 			delegate.parseCustomElement(root);
 		}
 	}
@@ -320,10 +325,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Process the given bean element, parsing the bean definition
 	 * and registering it with the registry.
 	 */
-	//处理bean节点的核心逻辑
+	//处理bean元素的核心逻辑
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		
-		//交由delegate解析bean节点，得到BeanDefinitionHolder
+		//委托delegate解析bean节点，得到bdHolder，其中包含配置文件中配置的各种属性id、name、alias、class等
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);

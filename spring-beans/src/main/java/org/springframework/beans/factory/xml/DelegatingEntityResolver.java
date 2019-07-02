@@ -82,9 +82,11 @@ public class DelegatingEntityResolver implements EntityResolver {
 	public InputSource resolveEntity(String publicId, @Nullable String systemId) throws SAXException, IOException {
 		if (systemId != null) {
 			if (systemId.endsWith(DTD_SUFFIX)) {
+				//如果是dtd从这里解析，直接截取systemId最后的xx.dtd然后去当前路径下寻找
 				return this.dtdResolver.resolveEntity(publicId, systemId);
 			}
 			else if (systemId.endsWith(XSD_SUFFIX)) {
+				//如果是xsd从这里解析,默认到META-INF/Spring.schemas文件中找到systemId所对应的XSD文件并加载
 				return this.schemaResolver.resolveEntity(publicId, systemId);
 			}
 		}

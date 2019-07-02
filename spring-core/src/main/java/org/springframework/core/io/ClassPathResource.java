@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @see ClassLoader#getResourceAsStream(String)
  * @see Class#getResourceAsStream(String)
  */
+//依赖于Class或ClassLoader加载classpath中的资源
 public class ClassPathResource extends AbstractFileResolvingResource {
 
 	private final String path;
@@ -76,11 +77,16 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @see ClassLoader#getResourceAsStream(String)
 	 */
 	public ClassPathResource(String path, @Nullable ClassLoader classLoader) {
+
+		//参数校验
 		Assert.notNull(path, "Path must not be null");
+
+		//path再处理
 		String pathToUse = StringUtils.cleanPath(path);
 		if (pathToUse.startsWith("/")) {
 			pathToUse = pathToUse.substring(1);
 		}
+
 		this.path = pathToUse;
 		this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
 	}
@@ -166,6 +172,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 */
 	@Override
 	public InputStream getInputStream() throws IOException {
+
 		InputStream is;
 		if (this.clazz != null) {
 			is = this.clazz.getResourceAsStream(this.path);
@@ -176,6 +183,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		else {
 			is = ClassLoader.getSystemResourceAsStream(this.path);
 		}
+
 		if (is == null) {
 			throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
 		}

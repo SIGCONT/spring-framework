@@ -49,6 +49,9 @@ import org.springframework.lang.Nullable;
  * @see ByteArrayResource
  * @see InputStreamResource
  */
+//作为所有资源的抽象和访问接口
+//判断资源当前状态：存在性、可读性、打开状态
+//不同资源到URL、URI、File类型的转换
 public interface Resource extends InputStreamSource {
 
 	/**

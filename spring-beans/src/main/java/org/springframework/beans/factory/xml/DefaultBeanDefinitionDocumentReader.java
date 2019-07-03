@@ -178,8 +178,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
 		//如果是默认标签，则由当前类解析
-		//如果是个性化标签委托给elegate解析
-		//个性化标签的解析由Spring实现了类似SPI的扩展功能
+		//如果是自定义标签则委托给delegate解析
+		//自定义标签的解析由Spring实现了类似SPI的扩展功能
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
@@ -328,22 +328,24 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Process the given bean element, parsing the bean definition
 	 * and registering it with the registry.
 	 */
-	//处理bean元素的核心逻辑
+	//解析bean标签的核心逻辑
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		
 		//委托delegate解析bean节点，得到bdHolder，其中包含配置文件中配置的各种属性id、name、alias、class等
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
+			//子元素中还有自定义标签需要进一步处理
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
-				// Register the final decorated instance.
+				//使用工具类进行注册
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {
 				getReaderContext().error("Failed to register bean definition with name '" +
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
-			// Send registration event.
+
+			//发出响应事件，通知相关的监听器，此bean已经加载完成
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}

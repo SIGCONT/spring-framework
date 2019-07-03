@@ -53,6 +53,7 @@ public interface BeanDefinitionParser {
 	 * @return the primary {@link BeanDefinition}
 	 */
 	@Nullable
+	//用来解析XSD文件中的定义和组件定义
 	BeanDefinition parse(Element element, ParserContext parserContext);
 
 }

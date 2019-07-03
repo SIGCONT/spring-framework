@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @since 2.0
  */
+//用来解析XSD文件中的定义和组件定义
 public abstract class AbstractBeanDefinitionParser implements BeanDefinitionParser {
 
 	/** Constant for the "id" attribute */

@@ -82,7 +82,10 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	 * @see #setEnvironment
 	 */
 	protected AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {
+
+		//参数校验
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+		
 		this.registry = registry;
 
 		// Determine ResourceLoader to use.

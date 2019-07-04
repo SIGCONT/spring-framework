@@ -138,7 +138,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
-			//获取beans节点是否定义了profile属性，如果定义了则需要到环境变量中去寻找
+			//获取beans节点是否定义了profile属性，如果定义了则需要到环境变量中去寻找，不匹配则不处理
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -182,6 +182,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		//自定义标签的解析由Spring实现了类似SPI的扩展功能
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();
+			//遍历beans的所有子元素，向下分发处理
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node node = nl.item(i);
 				if (node instanceof Element) {
@@ -200,7 +201,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 	}
 
-	//解析默认命名空间下的元素，向下中转调用
+	//解析默认命名空间下的标签，向下中转调用
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
 
 		//import，使用同一个XmlBeanDefinitionReader向下递归处理
@@ -217,7 +218,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		//beans
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
-			// recurse
+			//递归调用解析此beans元素
 			doRegisterBeanDefinitions(ele);
 		}
 	}

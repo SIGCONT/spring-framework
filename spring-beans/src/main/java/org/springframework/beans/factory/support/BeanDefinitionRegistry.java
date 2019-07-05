@@ -46,6 +46,7 @@ import org.springframework.core.AliasRegistry;
  * @see PropertiesBeanDefinitionReader
  */
 //定义对BeanDefinition的各项增删改查操作，主要用于Spring内部解析配置文件注册BeanDefinition时使用
+//方法命名比较规范 register/remove/get/contains
 public interface BeanDefinitionRegistry extends AliasRegistry {
 
 	/**

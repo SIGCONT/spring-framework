@@ -72,15 +72,19 @@ import org.springframework.util.StringUtils;
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
 	/** Cache of singleton objects: bean name --> bean instance */
+	//用于保存beanName和创建bean实例之间的关系
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/** Cache of singleton factories: bean name --> ObjectFactory */
+	//用于保存beanName和创建bean的工厂之间的关系
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/** Cache of early singleton objects: bean name --> bean instance */
+	//也是保存beanName和创建bean实例之间的关系
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
 	/** Set of registered singletons, containing the bean names in registration order */
+	//用于保存当前所有已注册的beanName
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
 	/** Names of beans that are currently in creation */
@@ -164,6 +168,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	@Override
 	@Nullable
+	//根据beanName尝试获取单例bean，参数true设置标识允许早起依赖，向下中转调用
 	public Object getSingleton(String beanName) {
 		return getSingleton(beanName, true);
 	}
@@ -177,14 +182,22 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @return the registered singleton object, or {@code null} if none found
 	 */
 	@Nullable
+	//根据beanName尝试获取单例bean
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+
+		//首先尝试从singletonObjects里面获取实例
 		Object singletonObject = this.singletonObjects.get(beanName);
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+
+			//如果为空，则锁定缓存Map并进行处理
 			synchronized (this.singletonObjects) {
+				//再尝试从earlySingletonObjects里面获取
 				singletonObject = this.earlySingletonObjects.get(beanName);
 				if (singletonObject == null && allowEarlyReference) {
+					//再尝试从singletonFactories里面获取对应的ObjectFactory
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
+						//创建bean并放到earlySingletonObjects中，并删除ObjectFactory
 						singletonObject = singletonFactory.getObject();
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						this.singletonFactories.remove(beanName);
@@ -192,6 +205,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				}
 			}
 		}
+
 		return singletonObject;
 	}
 
@@ -204,9 +218,16 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @return the registered singleton object
 	 */
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
+
+		//参数验证
 		Assert.notNull(beanName, "Bean name must not be null");
+
+		//逻辑都在临界区中
 		synchronized (this.singletonObjects) {
+
+			//从singletonObjects中获取对应的bean，如果存在则直接返回
 			Object singletonObject = this.singletonObjects.get(beanName);
+			//如果不存在则进行singleton bean的初始化
 			if (singletonObject == null) {
 				if (this.singletonsCurrentlyInDestruction) {
 					throw new BeanCreationNotAllowedException(beanName,
@@ -252,6 +273,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					addSingleton(beanName, singletonObject);
 				}
 			}
+
 			return singletonObject;
 		}
 	}

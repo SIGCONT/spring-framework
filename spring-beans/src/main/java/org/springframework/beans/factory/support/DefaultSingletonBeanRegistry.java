@@ -168,7 +168,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	@Override
 	@Nullable
-	//根据beanName尝试获取单例bean，参数true设置标识允许早起依赖，向下中转调用
+	//根据beanName尝试获取单例bean，参数true设置标识允许早期依赖，向下中转调用
 	public Object getSingleton(String beanName) {
 		return getSingleton(beanName, true);
 	}
@@ -185,7 +185,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	//根据beanName尝试获取单例bean
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 
-		//首先尝试从singletonObjects里面获取实例
+		//首先尝试从singletonObjects里面获取实例，如果获取到了直接返回
+		//否则判断beanName是否在singletonsCurrentlyInCreation中，如果在则要进一步处理
+		//(从哪边填充进去的???)
 		Object singletonObject = this.singletonObjects.get(beanName);
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 
@@ -197,7 +199,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					//再尝试从singletonFactories里面获取对应的ObjectFactory
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
-						//创建bean并放到earlySingletonObjects中，并删除ObjectFactory
+						//创建单例bean并放到earlySingletonObjects中，并删除ObjectFactory
 						singletonObject = singletonFactory.getObject();
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						this.singletonFactories.remove(beanName);
@@ -206,6 +208,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			}
 		}
 
+		
+		//直接返回的情况：
+		//1 singletonObject不为null(容易理解)
+		//2 singletonsCurrentlyInCreation中不包含此beanName
 		return singletonObject;
 	}
 
@@ -217,6 +223,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * with, if necessary
 	 * @return the registered singleton object
 	 */
+	//根据beanName获取singleton，首次获取一个singleton bean时最终会调用到
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 
 		//参数验证
@@ -225,7 +232,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		//逻辑都在临界区中
 		synchronized (this.singletonObjects) {
 
-			//从singletonObjects中获取对应的bean，如果存在则直接返回
+			//从singletonObjects中获取对应的bean，如果存在则直接返回，首次获取时不存在
 			Object singletonObject = this.singletonObjects.get(beanName);
 			//如果不存在则进行singleton bean的初始化
 			if (singletonObject == null) {
@@ -237,6 +244,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
+
+				//beanName添加到singletonsCurrentlyInCreation中
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
@@ -267,9 +276,12 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (recordSuppressedExceptions) {
 						this.suppressedExceptions = null;
 					}
+					//把beanName从singletonsCurrentlyInCreation中移除
 					afterSingletonCreation(beanName);
 				}
 				if (newSingleton) {
+					//把singletonObject添加到singletonObjects中
+					//同时移除多级缓存中的beanName
 					addSingleton(beanName, singletonObject);
 				}
 			}

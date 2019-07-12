@@ -195,6 +195,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	//---------------------------------------------------------------------
 
 	@Override
+	//根据name获取bean的顶层接口方法
 	public Object getBean(String name) throws BeansException {
 
 		//传入name获取bean，向下中转调用
@@ -246,10 +247,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
-		//尝试从缓存中加载singleton bean，可能存在也可能未初始化为null
+		//尝试从缓存中加载singleton bean，可能存在也可能不存在为null
 		//核心逻辑部分，根据是否为null分成两种情况处理
 		Object sharedInstance = getSingleton(beanName);
 		
+		//sharedInstance不为null且args为null，缓存中已存在的简单情况
 		if (sharedInstance != null && args == null) {
 			if (logger.isDebugEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
@@ -1650,11 +1652,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		//如果原生name有&前缀，表示想获取FactoryBean实例本身
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
 			}
-			//如果指定的name是工厂相关且beanInstance不是FactoryBean类型则验证不通过
+			//如果指定的name是工厂相关但是beanInstance不是FactoryBean类型则验证不通过
 			if (!(beanInstance instanceof FactoryBean)) {
 				throw new BeanIsNotAFactoryException(transformedBeanName(name), beanInstance.getClass());
 			}
@@ -1667,11 +1670,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
 			return beanInstance;
 		}
+		//如果是要获取FactoryBean产生的对象，则继续向下处理
 
 
 		//加载FactoryBean
 		Object object = null;
 		if (mbd == null) {
+			//从factoryBeanObjectCache中获取缓存的FactoryBean产生的对象
+			//FactoryBean和它产生的对象处于两个不同的缓存，避免冲突
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {

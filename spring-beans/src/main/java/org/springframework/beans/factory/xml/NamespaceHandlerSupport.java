@@ -69,9 +69,10 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	 */
 	@Override
 	@Nullable
+	//对接口方法进行实现，委托给下一级的BeanDefinitionParser来进行解析
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 
-		//寻找元素名对应的解析器进行解析操作
+		//根据标签名获取对应的下一级解析器进行处理
 		BeanDefinitionParser parser = findParserForElement(element, parserContext);
 		return (parser != null ? parser.parse(element, parserContext) : null);
 	}
@@ -81,6 +82,7 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	 * the local name of the supplied {@link Element}.
 	 */
 	@Nullable
+	//根据标签名获取对应的下一级解析器
 	private BeanDefinitionParser findParserForElement(Element element, ParserContext parserContext) {
 
 		//获取元素名称，不包括命名空间别名的部分

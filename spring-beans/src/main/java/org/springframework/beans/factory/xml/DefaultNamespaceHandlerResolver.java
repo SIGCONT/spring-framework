@@ -114,7 +114,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	 */
 	@Override
 	@Nullable
-	//工具方法，用于根据命名空间查找对应的NamespaceHandler
+	//工具方法，用于根据标签的命名空间查找对应的NamespaceHandler
 	public NamespaceHandler resolve(String namespaceUri) {
 
 		//读取配置文件，获取handler映射，V使用Object类型，解析前存储className，解析后存储handler实例
@@ -165,6 +165,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 			synchronized (this) {
 				handlerMappings = this.handlerMappings;
 				if (handlerMappings == null) {
+
 					if (logger.isDebugEnabled()) {
 						logger.debug("Loading NamespaceHandler mappings from [" + this.handlerMappingsLocation + "]");
 					}

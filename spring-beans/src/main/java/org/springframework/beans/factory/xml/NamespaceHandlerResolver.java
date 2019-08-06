@@ -28,6 +28,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader
  */
 @FunctionalInterface
+//根据标签的命名空间获取对应的NamespaceHandler，当前只有一个子类DefaultNamespaceHandlerResolver
 public interface NamespaceHandlerResolver {
 
 	/**

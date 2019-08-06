@@ -177,8 +177,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * @param root the DOM root element of the document
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
-		//如果是默认标签，则由当前类解析
-		//如果是自定义标签则委托给delegate解析
+		//根据标签是否是默认标签分成两种情况处理
+		//如果是默认标签，则由当前类解析，如果是自定义标签则委托给delegate解析
 		//自定义标签的解析由Spring实现了类似SPI的扩展功能
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();

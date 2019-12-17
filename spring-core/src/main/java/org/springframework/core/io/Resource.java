@@ -52,6 +52,7 @@ import org.springframework.lang.Nullable;
 //作为所有资源的抽象和访问接口
 //判断资源当前状态：存在性、可读性、打开状态
 //不同资源到URL、URI、File类型的转换
+//判断相关方法不会抛出异常，操作方法会抛出
 public interface Resource extends InputStreamSource {
 
 	/**

@@ -79,6 +79,7 @@ public class XmlBeanFactory extends DefaultListableBeanFactory {
 	 * @param parentBeanFactory parent bean factory
 	 * @throws BeansException in case of loading or parsing errors
 	 */
+	//没有做判断验证处理，直接向下中转调用
 	public XmlBeanFactory(Resource resource, BeanFactory parentBeanFactory) throws BeansException {
 		super(parentBeanFactory);
 		//资源加载的真正实现

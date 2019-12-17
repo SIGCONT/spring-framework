@@ -315,6 +315,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 */
+	//方法有两种写法，步骤式设计和层级式设计
+	//步骤式设计在当前层次完成所有工作，按步骤进行
+	//层级式设计对任务拆分，当前层次完成准备工作，主要工作向下调用
 	public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
 
 		//参数校验
@@ -329,7 +332,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			currentResources = new HashSet<>(4);
 			this.resourcesCurrentlyBeingLoaded.set(currentResources);
 		}
-		//加载前把resource入栈，加载结束后再出栈
+		//加载前把resource入栈，加载结束后再出栈，如果循环引用，则抛出异常
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException("Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
@@ -341,7 +344,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
 				}
-				//构造InputSource对象，向下中转调用
+				//构造InputSource对象，向下中转调用，完成核心工作
 				return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 			}
 			finally {
@@ -394,6 +397,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #doLoadDocument
 	 * @see #registerBeanDefinitions
 	 */
+	//在当前方法对所有异常进行封装处理，异常的作用就是指出具体的错误，方便修复
+	//对于余下异常，直接封装后抛出，向下调用的每一层方法不用再处理异常
+	//对于明确的代码，尽量避免可能的异常，也即减少可能的逻辑错误，因为发生后还是需要修复
+	//只有对外部资源的操作异常不可避免
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)	throws BeanDefinitionStoreException {
 
 		try {
@@ -520,6 +527,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #setDocumentReaderClass
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
+	//动词由load变为register，为xml解析做准备工作时叫load，开始解析时就叫register
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
 
 		//构造DefaultBeanDefinitionDocumentReader对象，委托其进行真正的资源加载

@@ -37,7 +37,7 @@ import org.springframework.lang.Nullable;
  * @since 1.1
  * @see org.springframework.core.io.Resource
  */
-//读取和解析Spring配置文件的顶层借口，定义了解析资源文件并注册BeanDefinition的方法
+//读取和解析Spring配置文件的顶层接口，定义了解析资源文件并注册BeanDefinition的方法
 public interface BeanDefinitionReader {
 
 	/**
